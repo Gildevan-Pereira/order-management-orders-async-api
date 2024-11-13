@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@asyncapi/web-component": "^2.4.3"
+  }
+}
