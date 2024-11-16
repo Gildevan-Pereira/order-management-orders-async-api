@@ -58,7 +58,7 @@ channels:
               arguments:
                 x-message-ttl: 5000 
                 x-dead-letter-exchange: order_management_events
-                x-dead-letter-routing-key: order_management_orders_processed_payment_retry_queue
+                x-dead-letter-routing-key: order_management_orders_processed_payment_queue
 
             dead_queue:
               name: order_management_orders__processed_payment_dead_queue
