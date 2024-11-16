@@ -22,7 +22,15 @@ channels:
         payload:
           contentType: application/json
           $ref: "#/components/schemas/OrderCreatedDto"
-  
+        bindings:
+          amqp:
+            is: created_order_routing_key
+            exchange:
+              name: order_management_events
+              type: topic
+              durable: true
+              autoDelete: false
+
   processed_payment_routing_key:
     subscribe:
       message:
@@ -37,16 +45,24 @@ channels:
             is: processed_payment_routing_key
             queue:
               name: order_management_orders_processed_payment_queue
+              description: Fila principal
               durable: true
               exclusive: false
               autoDelete: false
             retry_queue:
               name: order_management_orders_update_order_retry_queue
+              description: Fila para operação do fluxo de retentativa
               durable: true
               exclusive: false
               autoDelete: false
+              arguments:
+                x-message-ttl: 5000 
+                x-dead-letter-exchange: order_management_events
+                x-dead-letter-routing-key: order_management_orders_update_order_dead_queue
+
             dead_queue:
               name: order_management_orders_update_order_dead_queue
+              description: Fila para publicar eventos que não seguiram o fluxo correto ou excederam o máximo de retentativas
               durable: true
               exclusive: false
               autoDelete: false
@@ -55,6 +71,9 @@ channels:
               type: topic
               durable: true
               autoDelete: false
+            maxRetryPolicy:
+              retries: 3
+              description: A mensagem será reenviada para a fila de retentativa no máximo 3 vezes antes de ir para a Dead Letter Queue
       
 
 components:
