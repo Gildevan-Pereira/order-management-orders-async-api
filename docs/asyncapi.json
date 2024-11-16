@@ -20,6 +20,7 @@
           "title": "Evento de ordem criada",
           "description": "Evento que informa que uma ordem foi criada para que os serviços interessados possam consumir",
           "payload": {
+            "contentType": "application/json",
             "$ref": "#/components/schemas/OrderCreatedDto"
           }
         }
@@ -32,121 +33,37 @@
           "title": "Evento de pagamento processado",
           "description": "Evento de processamento do pagamento para atualização do status da ordem.",
           "payload": {
+            "contentType": "application/json",
             "$ref": "#/components/schemas/OrderUpdatedDto"
-          }
-        }
-      }
-    },
-    "created_order_exchange": {
-      "description": "Exchange de ordem criada",
-      "publish": {
-        "summary": "Recebe mensage de ordem criada e redireciona para a fila",
-        "message": {
-          "name": "created_order_to_payment",
-          "title": "Exchange de criação de ordem",
-          "payload": {
-            "$ref": "#/components/schemas/OrderUpdatedDto"
-          }
-        },
-        "bindings": {
-          "amqp": {
-            "is": "created_order_routing_key",
-            "exchange": {
-              "name": "created_order_exchange",
-              "type": "topic",
-              "durable": true
+          },
+          "bindings": {
+            "amqp": {
+              "is": "processed_payment_routing_key",
+              "queue": {
+                "name": "order_management_orders_processed_payment_queue",
+                "durable": true,
+                "exclusive": false,
+                "autoDelete": false
+              },
+              "retry_queue": {
+                "name": "order_management_orders_update_order_retry_queue",
+                "durable": true,
+                "exclusive": false,
+                "autoDelete": false
+              },
+              "dead_queue": {
+                "name": "order_management_orders_update_order_dead_queue",
+                "durable": true,
+                "exclusive": false,
+                "autoDelete": false
+              },
+              "exchange": {
+                "name": "order_management_events",
+                "type": "topic",
+                "durable": true,
+                "autoDelete": false
+              }
             }
-          }
-        }
-      }
-    },
-    "update_order_exchange": {
-      "description": "Exchange de atualização da ordem",
-      "subscribe": {
-        "summary": "Recebe mensage do processamento da ordem e redireciona para a fila de atualização",
-        "operationId": "receberMensagemExchange",
-        "message": {
-          "name": "update_processed_payment",
-          "title": "Exchange de atualização de ordem",
-          "payload": {
-            "$ref": "#/components/schemas/OrderUpdatedDto"
-          }
-        }
-      },
-      "bindings": {
-        "amqp": {
-          "is": "processed_payment_routing_key",
-          "exchange": {
-            "name": "update_order_exchange",
-            "type": "topic",
-            "durable": true,
-            "autoDelete": false
-          }
-        }
-      }
-    },
-    "update_order_queue": {
-      "description": "Fila para eventos de atualização de ordem",
-      "subscribe": {
-        "summary": "Consome eventos de pagamentos processados",
-        "message": {
-          "name": "update_processed_payment_queue",
-          "title": "Fila de atualização da ordem",
-          "payload": {
-            "$ref": "#/components/schemas/OrderUpdatedDto"
-          }
-        }
-      },
-      "bindings": {
-        "amqp": {
-          "is": "update_order_queue",
-          "queue": {
-            "name": "update_order_queue",
-            "durable": true
-          }
-        }
-      }
-    },
-    "update_order_retry_queue": {
-      "description": "Fila para retentativa de atualização de ordem",
-      "subscribe": {
-        "summary": "Consome eventos de pagamentos processados e executa o fluxo de retentativa",
-        "message": {
-          "name": "retry_update_processed_payment_queue",
-          "title": "Fila de retentativa de atualização da ordem",
-          "payload": {
-            "$ref": "#/components/schemas/OrderUpdatedDto"
-          }
-        }
-      },
-      "bindings": {
-        "amqp": {
-          "is": "retry_queue",
-          "queue": {
-            "name": "update_order_retry_queue",
-            "durable": true
-          }
-        }
-      }
-    },
-    "update_order_dead_queue": {
-      "description": "Fila para enviar mensagens falhas para fila morta",
-      "subscribe": {
-        "summary": "Consome eventos de pagamentos processados e envia mensagens falhas para fila morta",
-        "message": {
-          "name": "dead_queue",
-          "title": "Fila morta para mensagens incorretas ou que falharam",
-          "payload": {
-            "$ref": "#/components/schemas/OrderUpdatedDto"
-          }
-        }
-      },
-      "bindings": {
-        "amqp": {
-          "is": "update_order_retry_queue",
-          "queue": {
-            "name": "update_order_retry_queue",
-            "durable": true
           }
         }
       }
