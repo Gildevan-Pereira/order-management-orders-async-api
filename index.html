@@ -13,7 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
     <script>
 
-        const schemaUrl = 'https://raw.githubusercontent.com/Gildevan-Pereira/order-management-orders-async-api/refs/heads/master/docs/asyncapi.yaml';
+        const schemaUrl = 'https://raw.githubusercontent.com/Gildevan-Pereira/order-management-orders-async-api/refs/heads/master/docs/asyncapi.yaml'; // URL do YAML
 
         fetch(schemaUrl)
             .then(response => {
@@ -23,15 +23,19 @@
                 return response.text();
             })
             .then(yamlText => {
-                const schema = jsyaml.load(yamlText);
-                AsyncApiStandalone.render({
-                    schema: schema,
-                    config: {
-                        show: {
-                            sidebar: true,
-                        }
-                    },
-                }, document.getElementById('asyncapi'));
+                try {
+                    const schema = jsyaml.load(yamlText);
+                    AsyncApiStandalone.render({
+                        schema: schema,
+                        config: {
+                            show: {
+                                sidebar: true,
+                            }
+                        },
+                    }, document.getElementById('asyncapi'));
+                } catch (e) {
+                    console.error('Erro ao converter YAML para JSON:', e);
+                }
             })
             .catch(error => {
                 console.error('Erro ao renderizar o AsyncAPI:', error);
