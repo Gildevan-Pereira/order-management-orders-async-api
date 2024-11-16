@@ -10,22 +10,22 @@
     <div id="asyncapi"></div>
 
     <script src="https://unpkg.com/@asyncapi/react-component@1.0.0-next.39/browser/standalone/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
     <script>
 
-        const schemaUrl = 'https://raw.githubusercontent.com/Gildevan-Pereira/order-management-orders-async-api/refs/heads/master/docs/asyncapi.json';
+        const schemaUrl = 'https://raw.githubusercontent.com/Gildevan-Pereira/order-management-orders-async-api/refs/heads/master/docs/asyncapi.yaml';
 
-        // Carregando o schema do arquivo
         fetch(schemaUrl)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`Erro ao carregar o schema: ${response.statusText}`);
                 }
-                return response.json();
+                return response.text();
             })
-            .then(schema => {
-                // Renderizando o componente AsyncAPI
+            .then(yamlText => {
+                const schema = jsyaml.load(yamlText);
                 AsyncApiStandalone.render({
-                    schema: schema, // Schema carregado
+                    schema: schema,
                     config: {
                         show: {
                             sidebar: true,
