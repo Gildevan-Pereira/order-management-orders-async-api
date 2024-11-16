@@ -1,5 +1,5 @@
 {
-  "asyncapi": "2.5.0",
+  "asyncapi": "2.4.0",
   "info": {
     "title": "Async API",
     "description": "API de eventos assíncronos do processamento de ordens do microsserviço order-management-orders",
