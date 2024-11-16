@@ -4,17 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AsyncAPI Documentation</title>
-    <!-- Importar o AsyncAPI Web Component -->
-    <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.5.0/webcomponents-bundle.js"></script>
-    <script src="https://unpkg.com/@asyncapi/web-component@0.24.0/lib/asyncapi-web-component.js" defer></script>
+    <link rel="stylesheet" href="https://unpkg.com/@asyncapi/react-component@1.0.0-next.39/styles/default.min.css">
 </head>
 <body>
-    <h1>Documentação AsyncAPI</h1>
-    <!-- Usar o AsyncAPI Web Component -->
-    <asyncapi-component 
-        schema-url="https://raw.githubusercontent.com/Gildevan-Pereira/order-management-orders-async-api/refs/heads/master/docs/asyncapi.yaml" theme="light">
-        config='{"show": {"info": false}}'
-        cssImportPath="https://unpkg.com/@asyncapi/react-component@0.24.0/styles/default.min.css">
-    </asyncapi-component>
+    <div id="asyncapi"></div>
+
+    <script src="https://unpkg.com/@asyncapi/react-component@1.0.0-next.39/browser/standalone/index.js"></script>
+    <script>
+        AsyncApiStandalone.render({
+            schema: 'https://raw.githubusercontent.com/Gildevan-Pereira/order-management-orders-async-api/refs/heads/master/docs/asyncapi.json'
+            ,
+            config: {
+                show: {
+                    sidebar: true,
+                }
+            },
+        }, document.getElementById('asyncapi'));
+    </script>
 </body>
 </html>
